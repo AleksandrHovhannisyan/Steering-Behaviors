@@ -9,13 +9,17 @@ public class Wandering : MonoBehaviour
     public float maxForce;
     public float radius;
     private Rigidbody body;
+    private float timeLookahead;
     
 
     void Awake()
     {
         body = gameObject.GetComponent<Rigidbody>();
         speed = maxSpeed;
-        body.velocity = new Vector3(5, 0, 5);
+        timeLookahead = 2;
+
+        // Give it an initial nudge in a random direction
+        body.velocity = new Vector3(Random.Range(-15, 15), 0, Random.Range(-15, 15));
     }
 
     
@@ -67,9 +71,9 @@ public class Wandering : MonoBehaviour
         // We have a current velocity
         // We have a time elapsed
         // We have a current position
-        // Future position = current position + current velocity * delta time
+        // Future position = current position + current velocity * time
 
-        return transform.position + body.velocity * Time.deltaTime;
+        return transform.position + body.velocity * timeLookahead;
     }
 
 

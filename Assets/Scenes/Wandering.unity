@@ -349,7 +349,7 @@ Transform:
   m_GameObject: {fileID: 1637365195}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 150, y: 1, z: 150}
+  m_LocalScale: {x: 500, y: 1, z: 500}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -369,7 +369,7 @@ GameObject:
   - component: {fileID: 1903186845}
   - component: {fileID: 1903186847}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -475,6 +475,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3de86c7e39ad29e4ebd1c4acd4bac83e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 40
+  maxSpeed: 60
   maxForce: 20
   radius: 60
