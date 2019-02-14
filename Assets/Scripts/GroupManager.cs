@@ -8,14 +8,20 @@ public class GroupManager : MonoBehaviour
     public bool separationEnabled = false;
     public bool cohesionEnabled = false;
 
-    public static int numVehicles = 150;
+    public float alignmentWeight = 1.0f;
+    public float separationWeight = 2.0f;
+    public float cohesionWeight = 1.5f;
+
+    public static int numVehicles = 100;
     public static List<GameObject> boids;
     public GameObject boidPrefab;
 
     private float minX = 200;
     private float minZ = 200;
     
-
+    
+    /* Sets up all necessary info for the script. Main role is to spawn boids.
+     */ 
     void Awake()
     {
         boids = new List<GameObject>(numVehicles);
@@ -27,23 +33,30 @@ public class GroupManager : MonoBehaviour
             boids.Add(newBoid);
         }        
     }
+    
 
-
+    /* Called by the physics engine. Update loop.
+     */ 
     void FixedUpdate()
     {
-        foreach(GameObject boid in boids)
+        foreach(GameObject vehicle in boids)
         {
+            Boid boid = vehicle.GetComponent<Boid>();
+            Rigidbody body = boid.GetComponent<Rigidbody>();
+
             if(alignmentEnabled)
             {
-                boid.gameObject.GetComponent<Boid>().Align();
+                body.AddForce(boid.Align() * alignmentWeight);
             }
+
             if(separationEnabled)
             {
-                boid.gameObject.GetComponent<Boid>().Separate();
+                body.AddForce(boid.Separate() * separationWeight);
             }
+
             if(cohesionEnabled)
             {
-                boid.gameObject.GetComponent<Boid>().Cohere();
+                body.AddForce(boid.Cohere() * cohesionWeight);
             }
         }
     }
