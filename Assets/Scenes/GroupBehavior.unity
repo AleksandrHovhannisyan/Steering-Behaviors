@@ -141,9 +141,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6737a7cf487c70945949fc03b390c0aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alignmentEnabled: 0
+  alignmentEnabled: 1
   separationEnabled: 1
-  cohesionEnabled: 0
+  cohesionEnabled: 1
+  alignmentWeight: 1
+  separationWeight: 2
+  cohesionWeight: 1.5
   boidPrefab: {fileID: 9193123552261379308, guid: 9cc4268443ce7a04f84f09817bb02d98,
     type: 3}
 --- !u!4 &553955791
@@ -374,6 +377,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 6091994963511278026, guid: a084c00aa894ad04e999c484a1b633a4,
+        type: 3}
+      propertyPath: walls
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a084c00aa894ad04e999c484a1b633a4, type: 3}

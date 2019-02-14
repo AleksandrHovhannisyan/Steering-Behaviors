@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0975bbdd4ffdb0c47b2f5d8dd160bf69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 30
-  maxForce: 40
+  maxSpeed: 20
+  maxForce: 20
 --- !u!1001 &7362758399237825340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -90,6 +90,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Constraints
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1853597285071009749, guid: ab3b68e487c9bf24ab37079070b5302c,
+        type: 3}
+      propertyPath: m_Drag
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1853597285071009750, guid: ab3b68e487c9bf24ab37079070b5302c, type: 3}
