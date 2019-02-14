@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class GroupManager : MonoBehaviour
 {
+    public bool alignmentEnabled = false;
+    public bool separationEnabled = false;
+    public bool cohesionEnabled = false;
+
     public static int numVehicles = 150;
     public static List<GameObject> boids;
     public GameObject boidPrefab;
@@ -29,7 +33,18 @@ public class GroupManager : MonoBehaviour
     {
         foreach(GameObject boid in boids)
         {
-            boid.gameObject.GetComponent<Boid>().Separate();
+            if(alignmentEnabled)
+            {
+                boid.gameObject.GetComponent<Boid>().Align();
+            }
+            if(separationEnabled)
+            {
+                boid.gameObject.GetComponent<Boid>().Separate();
+            }
+            if(cohesionEnabled)
+            {
+                boid.gameObject.GetComponent<Boid>().Cohere();
+            }
         }
     }
 }

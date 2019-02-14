@@ -75,8 +75,25 @@ public class Boid : MonoBehaviour
     }
 
 
+    /* Called each frame by the group manager. Aligns this boid with all other boids
+     * in its immediate neighborhood.
+     */
+    public void Align()
+    {
+        // TODO
+    }
+
+
+    /* Called each frame by the group manager. Ensures this boid remains close to neighboring boids.
+    */
+    public void Cohere()
+    {
+        // TODO
+    }
+
+
     /* For testing, to ensure there are no collisions.
-     */ 
+     */
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.collider.gameObject.CompareTag("Boid"))
