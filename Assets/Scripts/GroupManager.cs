@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class GroupManager : MonoBehaviour
 {
+    public Camera camera;
+
     public bool alignmentEnabled = false;
     public bool separationEnabled = false;
     public bool cohesionEnabled = false;
+    public bool seekEnabled = false;
 
     public float alignmentWeight = 1.0f;
     public float separationWeight = 2.0f;
     public float cohesionWeight = 1.5f;
+    public float seekWeight = 1.0f;
 
     public static int numVehicles = 100;
     public static List<GameObject> boids;
@@ -33,7 +37,7 @@ public class GroupManager : MonoBehaviour
             boids.Add(newBoid);
         }        
     }
-    
+   
 
     /* Called by the physics engine. Update loop.
      */ 
@@ -57,6 +61,18 @@ public class GroupManager : MonoBehaviour
             if(cohesionEnabled)
             {
                 body.AddForce(boid.Cohere() * cohesionWeight);
+            }
+
+            if(seekEnabled)
+            {
+                Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                // If the camera is pointing somewhere on the floor
+                if (Physics.Raycast(ray, out hit))
+                {
+                    body.AddForce(boid.Seek(hit.point) * seekWeight);
+                }
             }
         }
     }

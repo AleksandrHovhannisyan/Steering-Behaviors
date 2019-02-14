@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 20
-  maxForce: 20
+  maxForce: 30
 --- !u!1001 &7362758399237825340
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ public class Boid : MonoBehaviour
 
         float radius = transform.localScale.x / 2;
 
-        maxSpeed = (int)Random.Range(10, 30);
+        maxSpeed = (int)Random.Range(20, 40);
 
         desiredSeparation = radius * radius;
         alignmentRadius = radius * radius + 2;
@@ -139,12 +139,12 @@ public class Boid : MonoBehaviour
 
         // Calculate velocities
         Vector3 currentVelocity = body.velocity;
-        Vector3 desiredVelocity = GetDesiredVelocity(target) / distanceToTarget;
+        Vector3 desiredVelocity = GetDesiredVelocity(target);
 
         // Force to be applied to the boid
         Vector3 steerForce = desiredVelocity - currentVelocity;
 
-        // Cap the force that can be applied (lower max force = more difficult to turn)
+        // Cap the force that can be applied
         if (steerForce.magnitude > maxForce)
         {
             steerForce.Normalize();
