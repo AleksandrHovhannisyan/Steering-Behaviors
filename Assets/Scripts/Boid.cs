@@ -5,48 +5,55 @@ using UnityEngine;
 public class Boid : MonoBehaviour
 {
     private float desiredSeparation;
-    public int maxSpeed = 60;
-    public int maxForce = 40;
+    private float alignmentRadius;
+    private float cohesionRadius;
+
+    public float maxSpeed = 20;
+    public float maxForce;
     private Rigidbody body;
 
 
     /* Set up all necessary members.
      */ 
-    private void Start()
+    private void Awake()
     {
         body = gameObject.GetComponent<Rigidbody>();
 
         float radius = transform.localScale.x / 2;
 
+        maxSpeed = (int)Random.Range(10, 30);
+
         desiredSeparation = radius * radius;
+        alignmentRadius = radius * radius + 2;
+        cohesionRadius = radius * radius + 2;
     }
 
 
     /* Called each frame by the group manager. Identifies boids in this boid's neighborhood
      * and applies an appropriate force to separate it from the others and prevent collision.
-     */ 
-    public void Separate()
+     */
+    public Vector3 Separate()
     {
-        Vector3 sum = Vector3.zero;
+        Vector3 totalSeparation = Vector3.zero;
         int numNeighbors = 0;
 
         // Loop through all boids in the world
-        foreach(GameObject vehicle in GroupManager.boids)
+        foreach(GameObject boid in GroupManager.boids)
         {
-            Boid boid = vehicle.GetComponent<Boid>();
+            Boid neighbor = boid.GetComponent<Boid>();
 
-            Vector3 diff = transform.position - boid.transform.position;
-            float distance = Vector3.Magnitude(diff);
+            Vector3 separationVector = transform.position - neighbor.transform.position;
+            float distance = Vector3.Magnitude(separationVector);
 
             // If it's a neighbor within our vicinity
             if(distance > 0 && distance < desiredSeparation)
             {
-                diff.Normalize();
+                separationVector.Normalize();
 
                 // The closer a neighbor (smaller the distance), the more we should flee
-                diff /= distance;
+                separationVector /= distance; // TODO problematic or nah?
 
-                sum += diff;
+                totalSeparation += separationVector;
                 numNeighbors++;
             }
         }
@@ -55,50 +62,139 @@ public class Boid : MonoBehaviour
         if(numNeighbors > 0)
         {
             // Compute its average separation vector
-            Vector3 avgDirection = sum / numNeighbors;
-            avgDirection.Normalize();
-            avgDirection *= maxSpeed;
+            Vector3 averageSeparation = totalSeparation / numNeighbors;
+            averageSeparation.Normalize();
+            averageSeparation *= maxSpeed;
 
-            // Compute the steering force we need to apply
-            Vector3 steeringForce = avgDirection - body.velocity;
+            // Compute the separation force we need to apply
+            Vector3 separationForce = averageSeparation - body.velocity;
 
-            // Cap that steering force
-            if (steeringForce.magnitude > maxForce)
+            // Cap that separation force
+            if (separationForce.magnitude > maxForce)
             {
-                steeringForce.Normalize();
-                steeringForce *= maxForce;
+                separationForce.Normalize();
+                separationForce *= maxForce;
             }
-
-            // Apply steering force
-            body.AddForce(steeringForce);
+            
+            return separationForce;
         }
+
+        return Vector3.zero;
     }
 
 
     /* Called each frame by the group manager. Aligns this boid with all other boids
-     * in its immediate neighborhood.
+     * in its immediate neighborhood, effectively making it travel in the same direction.
      */
-    public void Align()
+    public Vector3 Align()
     {
-        // TODO
+        Vector3 totalHeading = Vector3.zero;
+        int numNeighbors = 0;
+
+        // Loop through all boids in the world
+        foreach (GameObject vehicle in GroupManager.boids)
+        {
+            Boid boid = vehicle.GetComponent<Boid>();
+
+            Vector3 separationVector = transform.position - boid.transform.position;
+            float distance = Vector3.Magnitude(separationVector);
+
+            // If it's a neighbor within our vicinity
+            if (distance > 0 && distance < alignmentRadius)
+            {
+                numNeighbors++;
+                totalHeading += boid.body.velocity.normalized;
+            }
+        }
+
+        // That is, if this boid actually has neighbors to worry about
+        if (numNeighbors > 0)
+        {
+            // Average direction we need to head in
+            Vector3 averageHeading = (totalHeading / numNeighbors);
+            averageHeading.Normalize();
+
+            // Compute the steering force we need to apply
+            Vector3 alignmentForce = averageHeading * maxSpeed;
+
+            // Cap that steering force
+            if (alignmentForce.magnitude > maxForce)
+            {
+                alignmentForce.Normalize();
+                alignmentForce *= maxForce;
+            }
+
+            return alignmentForce;
+        }
+
+        return Vector3.zero;
+    }
+    
+
+    /* Returns a vector that can be used to direct a boid towards the target position.
+     */ 
+    public Vector3 Seek(Vector3 target)
+    {
+        float distanceToTarget = Mathf.Abs(Vector3.Magnitude(target - transform.position));
+
+        // Calculate velocities
+        Vector3 currentVelocity = body.velocity;
+        Vector3 desiredVelocity = GetDesiredVelocity(target) / distanceToTarget;
+
+        // Force to be applied to the boid
+        Vector3 steerForce = desiredVelocity - currentVelocity;
+
+        // Cap the force that can be applied (lower max force = more difficult to turn)
+        if (steerForce.magnitude > maxForce)
+        {
+            steerForce.Normalize();
+            steerForce *= maxForce;
+        }
+
+        return steerForce;
     }
 
 
     /* Called each frame by the group manager. Ensures this boid remains close to neighboring boids.
     */
-    public void Cohere()
+    public Vector3 Cohere()
     {
-        // TODO
+        Vector3 totalPositions = Vector3.zero;
+        int numNeighbors = 0;
+
+        // Loop through all boids in the world
+        foreach (GameObject vehicle in GroupManager.boids)
+        {
+            Boid boid = vehicle.GetComponent<Boid>();
+
+            Vector3 separationVector = transform.position - boid.transform.position;
+            float distance = Vector3.Magnitude(separationVector);
+
+            // If it's a neighbor within our vicinity, add its position to cumulative
+            if (distance > 0 && distance < cohesionRadius)
+            {
+                numNeighbors++;
+                totalPositions += boid.body.velocity.normalized;
+            }
+        }
+
+        // If there are neighbors
+        if(numNeighbors > 0)
+        {
+            Vector3 averagePosition = (totalPositions / numNeighbors);
+
+            return Seek(averagePosition);
+        }
+
+        return Vector3.zero;
     }
 
 
-    /* For testing, to ensure there are no collisions.
+    /* The desired velocity is simply the unit vector in the direction of the target
+     * scaled by the speed of the object.
      */
-    private void OnCollisionEnter(Collision collision)
+    Vector3 GetDesiredVelocity(Vector3 target)
     {
-        if(collision.collider.gameObject.CompareTag("Boid"))
-        {
-            Debug.Log("Oopsie woopsie");
-        }
+        return Vector3.Normalize(target - transform.position) * maxSpeed;
     }
 }
