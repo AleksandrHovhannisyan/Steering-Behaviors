@@ -10,11 +10,13 @@ public class GroupManager : MonoBehaviour
     public bool separationEnabled = false;
     public bool cohesionEnabled = false;
     public bool seekEnabled = false;
+    public bool wanderEnabled = false;
 
     public float alignmentWeight = 1.0f;
     public float separationWeight = 2.0f;
     public float cohesionWeight = 1.5f;
     public float seekWeight = 1.0f;
+    public float wanderWeight = 1.0f;
 
     public static int numVehicles = 100;
     public static List<GameObject> boids;
@@ -73,6 +75,11 @@ public class GroupManager : MonoBehaviour
                 {
                     body.AddForce(boid.Seek(hit.point) * seekWeight);
                 }
+            }
+
+            if(wanderEnabled)
+            {
+                body.AddForce(boid.Wander() * wanderWeight);
             }
         }
     }

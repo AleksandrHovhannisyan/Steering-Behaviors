@@ -10,6 +10,9 @@ public class Boid : MonoBehaviour
 
     public float maxSpeed = 20;
     public float maxForce;
+    private int timeLookahead = 4; // for wandering only
+    private float wanderingRadius = 60; // for wandering only
+
     private Rigidbody body;
 
 
@@ -20,8 +23,6 @@ public class Boid : MonoBehaviour
         body = gameObject.GetComponent<Rigidbody>();
 
         float radius = transform.localScale.x / 2;
-
-        maxSpeed = (int)Random.Range(20, 40);
 
         desiredSeparation = radius * radius;
         alignmentRadius = radius * radius + 2;
@@ -188,6 +189,56 @@ public class Boid : MonoBehaviour
 
         return Vector3.zero;
     }
+
+
+    /* Allows a boid to wander aimlessly, though with some sense of direction.
+     */ 
+    public Vector3 Wander()
+    {
+        // Get future position
+        Vector3 futurePosition = GetFuturePosition();
+
+        // Select random point on circle of radius "radius" around the future position
+        Vector3 target = GeneratePointOnCircle(futurePosition);
+
+        // Compute desired velocity as one pointing there
+        Vector3 desiredVelocity = GetDesiredVelocity(target);
+
+        // Get the steering force vector
+        Vector3 steerForce = desiredVelocity - body.velocity;
+
+        // Cap the force that can be applied
+        if (Vector3.Magnitude(steerForce) > maxForce)
+        {
+            steerForce = Vector3.Normalize(steerForce) * maxForce;
+        }
+
+        return steerForce;
+    }
+
+
+    /* Returns a random point on a circle positioned at the given center and radius.
+     */
+    Vector3 GeneratePointOnCircle(Vector3 center)
+    {
+        Vector3 point = center;
+
+        float angle = Random.Range(0, 360) * Mathf.Deg2Rad;
+        point.x += wanderingRadius * Mathf.Cos(angle);
+        point.z += wanderingRadius * Mathf.Sin(angle);
+
+        return point;
+    }
+
+
+    /* Computes and returns the future, predicted position of this object, assuming
+     * it continues traveling in its current direction at its current speed.
+     */
+    Vector3 GetFuturePosition()
+    {
+        return transform.position + body.velocity * timeLookahead;
+    }
+
 
 
     /* The desired velocity is simply the unit vector in the direction of the target

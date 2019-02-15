@@ -142,14 +142,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera: {fileID: 1598189645}
-  alignmentEnabled: 0
-  separationEnabled: 0
+  alignmentEnabled: 1
+  separationEnabled: 1
   cohesionEnabled: 0
   seekEnabled: 1
+  wanderEnabled: 0
   alignmentWeight: 1
   separationWeight: 2
   cohesionWeight: 1.5
   seekWeight: 1
+  wanderWeight: 1
   boidPrefab: {fileID: 9193123552261379308, guid: 9cc4268443ce7a04f84f09817bb02d98,
     type: 3}
 --- !u!4 &553955791
