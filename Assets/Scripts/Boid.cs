@@ -8,7 +8,7 @@ public class Boid : MonoBehaviour
     private float alignmentRadius;
     private float cohesionRadius;
 
-    public float maxSpeed = 20;
+    public float maxSpeed = 40;
     public float maxForce;
     private int timeLookahead = 4; // for wandering only
     private float wanderingRadius = 60; // for wandering only
