@@ -18,7 +18,7 @@ public class GroupManager : MonoBehaviour
     public float seekWeight = 1.0f;
     public float wanderWeight = 1.0f;
 
-    public static int numVehicles = 100;
+    public static int numVehicles = 20;
     public static List<GameObject> boids;
     public GameObject boidPrefab;
 
