@@ -9,4 +9,4 @@ A simple project to demonstrate the following steering behaviors, as defined by 
 
 Simply run the project and enable/disable the behaviors you want to see in the GroupManager's inspector pane. Here's an example with alignment, separation, and seeking turned on (and cohesion turned off):
 
-![](screenshots/example.PNG)
+![](screenshots/demo.GIF)
