@@ -6,22 +6,30 @@ public class GroupManager : MonoBehaviour
 {
     public Camera camera;
 
-    public bool alignmentEnabled = false;
-    public bool separationEnabled = false;
-    public bool cohesionEnabled = false;
-    public bool seekEnabled = false;
-    public bool wanderEnabled = false;
+    [SerializeField] private bool alignmentEnabled = false;
+    [SerializeField] private bool separationEnabled = false;
+    [SerializeField] private bool cohesionEnabled = false;
+    [SerializeField] private bool seekEnabled = false;
+    [SerializeField] private bool wanderEnabled = false;
 
-    public float alignmentWeight = 1.0f;
-    public float separationWeight = 2.0f;
-    public float cohesionWeight = 1.5f;
-    public float seekWeight = 1.0f;
-    public float wanderWeight = 1.0f;
-
-    public static int numVehicles = 20;
+    [Tooltip("The factor by which alignment will be scaled. Higher values emphasize this behavior relative to the others.")]
+    [SerializeField] private float alignmentWeight = 1.0f;
+    [Tooltip("The factor by which separation will be scaled. Higher values emphasize this behavior relative to the others.")]
+    [SerializeField] private float separationWeight = 2.0f;
+    [Tooltip("The factor by which cohesion will be scaled. Higher values emphasize this behavior relative to the others.")]
+    [SerializeField] private float cohesionWeight = 1.5f;
+    [Tooltip("The factor by which seeking will be scaled. Higher values emphasize this behavior relative to the others.")]
+    [SerializeField] private float seekWeight = 1.0f;
+    [Tooltip("The factor by which wandering will be scaled. Higher values emphasize this behavior relative to the others.")]
+    [SerializeField] private float wanderWeight = 1.0f;
+    
+    // These two members are used by the Boid.cs script to access information about their neighbors
+    public static int numBoidsToSpawn = 20;
     public static List<GameObject> boids;
-    public GameObject boidPrefab;
 
+    [SerializeField] private GameObject boidPrefab;
+
+    // For spawning boids. Each boid will be given a random x between -minX and minX; same goes for z.
     private float minX = 200;
     private float minZ = 200;
     
@@ -30,12 +38,14 @@ public class GroupManager : MonoBehaviour
      */ 
     void Awake()
     {
-        boids = new List<GameObject>(numVehicles);
+        boids = new List<GameObject>(numBoidsToSpawn);
+        float boidRadius = boidPrefab.transform.localScale.x / 2;
 
-        for(int i = 0; i < numVehicles; i++)
+        for(int i = 0; i < numBoidsToSpawn; i++)
         {
-            Vector3 position = new Vector3(Random.Range(-minX, minX), 5, Random.Range(-minZ, minZ));
-            GameObject newBoid = Instantiate(boidPrefab, position, Quaternion.identity);
+            // Note: boidRadius ensures that boids spawn at ground level, since they're spheres
+            Vector3 spawnPoint = new Vector3(Random.Range(-minX, minX), boidRadius, Random.Range(-minZ, minZ));
+            GameObject newBoid = Instantiate(boidPrefab, spawnPoint, Quaternion.identity);
             boids.Add(newBoid);
         }        
     }
