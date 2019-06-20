@@ -28,6 +28,7 @@ public class GroupManager : MonoBehaviour
     public static List<GameObject> boids;
 
     [SerializeField] private GameObject boidPrefab;
+    private float boidRadius;
 
     // For spawning boids. Each boid will be given a random x between -minX and minX; same goes for z.
     private float minX = 200;
@@ -39,22 +40,47 @@ public class GroupManager : MonoBehaviour
     void Awake()
     {
         boids = new List<GameObject>(numBoidsToSpawn);
-        float boidRadius = boidPrefab.transform.localScale.x / 2;
+        boidRadius = boidPrefab.transform.localScale.x / 2;
 
-        for(int i = 0; i < numBoidsToSpawn; i++)
+        for (int i = 0; i < numBoidsToSpawn; i++)
         {
-            // Note: boidRadius ensures that boids spawn at ground level, since they're spheres
-            Vector3 spawnPoint = new Vector3(Random.Range(-minX, minX), boidRadius, Random.Range(-minZ, minZ));
-            GameObject newBoid = Instantiate(boidPrefab, spawnPoint, Quaternion.identity);
-            boids.Add(newBoid);
+            SpawnBoid(Random.Range(-minX, minX), Random.Range(-minZ, minZ));
         }        
     }
-   
+
+    
+    /* Spawns a boid at the 3D point specified by x = x, y = boidRadius, z = z.
+     */ 
+    void SpawnBoid(float x, float z)
+    {
+        Vector3 spawnPoint = new Vector3(x, boidRadius, z);
+        GameObject newBoid = Instantiate(boidPrefab, spawnPoint, Quaternion.identity);
+        boids.Add(newBoid);
+    }
+
+
+    /* Used to spawn boids dynamically, at run time.
+     */ 
+    private void Update()
+    {
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if(Physics.Raycast(ray, out hit))
+        {
+            if(Input.GetMouseButtonDown(0))
+            {
+                SpawnBoid(hit.point.x, hit.point.z);
+            }
+        }
+    }
+
 
     /* Called by the physics engine. Update loop.
-     */ 
+     */
     void FixedUpdate()
     {
+        // Note: this doesn't conflict with adding boids at runtime because everything executes in one frame
         foreach(GameObject vehicle in boids)
         {
             Boid boid = vehicle.GetComponent<Boid>();
