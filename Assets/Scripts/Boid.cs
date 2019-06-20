@@ -24,7 +24,7 @@ public class Boid : MonoBehaviour
 
         float radius = transform.localScale.x / 2;
 
-        desiredSeparation = radius * radius;
+        desiredSeparation = radius * radius + radius;
         alignmentRadius = radius * radius + 2;
         cohesionRadius = radius * radius + 2;
     }
