@@ -37,7 +37,6 @@ public class Boid : MonoBehaviour
     {
         Vector2 rand = Random.insideUnitCircle;
         Vector3 initialHeading = new Vector3(rand.x, transform.position.y, rand.y);
-        Debug.Log(initialHeading);
         body.AddForce(initialHeading * maxForce);
     }
 

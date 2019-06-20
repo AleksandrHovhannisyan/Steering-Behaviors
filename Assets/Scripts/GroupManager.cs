@@ -24,7 +24,7 @@ public class GroupManager : MonoBehaviour
     [SerializeField] private float wanderWeight = 1.0f;
     
     // These two members are used by the Boid.cs script to access information about their neighbors
-    public static int numBoidsToSpawn = 20;
+    public static int numBoidsToSpawn = 50;
     public static List<GameObject> boids;
 
     [SerializeField] private GameObject boidPrefab;
