@@ -21,12 +21,24 @@ public class Boid : MonoBehaviour
     private void Awake()
     {
         body = gameObject.GetComponent<Rigidbody>();
-
         float radius = transform.localScale.x / 2;
 
         desiredSeparation = radius * radius + radius;
         alignmentRadius = radius * radius + 2;
         cohesionRadius = radius * radius + 2;
+
+        HeadInRandomDirection();
+    }
+
+
+    /* Applies a maximum force to the boid in a random direction.
+     */ 
+    void HeadInRandomDirection()
+    {
+        Vector2 rand = Random.insideUnitCircle;
+        Vector3 initialHeading = new Vector3(rand.x, transform.position.y, rand.y);
+        Debug.Log(initialHeading);
+        body.AddForce(initialHeading * maxForce);
     }
 
 
@@ -44,7 +56,7 @@ public class Boid : MonoBehaviour
             Boid neighbor = boid.GetComponent<Boid>();
 
             Vector3 separationVector = transform.position - neighbor.transform.position;
-            float distance = Vector3.Magnitude(separationVector);
+            float distance = separationVector.magnitude;
 
             // If it's a neighbor within our vicinity
             if(distance > 0 && distance < desiredSeparation)
@@ -52,7 +64,7 @@ public class Boid : MonoBehaviour
                 separationVector.Normalize();
 
                 // The closer a neighbor (smaller the distance), the more we should flee
-                separationVector /= distance; // TODO problematic or nah?
+                separationVector /= distance;
 
                 totalSeparation += separationVector;
                 numNeighbors++;
@@ -98,7 +110,7 @@ public class Boid : MonoBehaviour
             Boid boid = vehicle.GetComponent<Boid>();
 
             Vector3 separationVector = transform.position - boid.transform.position;
-            float distance = Vector3.Magnitude(separationVector);
+            float distance = separationVector.magnitude;
 
             // If it's a neighbor within our vicinity
             if (distance > 0 && distance < alignmentRadius)
@@ -136,20 +148,13 @@ public class Boid : MonoBehaviour
      */ 
     public Vector3 Seek(Vector3 target)
     {
-        float distanceToTarget = Mathf.Abs(Vector3.Magnitude(target - transform.position));
-
-        // Calculate velocities
-        Vector3 currentVelocity = body.velocity;
-        Vector3 desiredVelocity = GetDesiredVelocity(target);
-
         // Force to be applied to the boid
-        Vector3 steerForce = desiredVelocity - currentVelocity;
+        Vector3 steerForce = GetDesiredVelocity(target) - body.velocity;
 
         // Cap the force that can be applied
         if (steerForce.magnitude > maxForce)
         {
-            steerForce.Normalize();
-            steerForce *= maxForce;
+            steerForce = steerForce.normalized * maxForce;
         }
 
         return steerForce;
@@ -169,7 +174,7 @@ public class Boid : MonoBehaviour
             Boid boid = vehicle.GetComponent<Boid>();
 
             Vector3 separationVector = transform.position - boid.transform.position;
-            float distance = Vector3.Magnitude(separationVector);
+            float distance = separationVector.magnitude;
 
             // If it's a neighbor within our vicinity, add its position to cumulative
             if (distance > 0 && distance < cohesionRadius)
@@ -195,11 +200,8 @@ public class Boid : MonoBehaviour
      */ 
     public Vector3 Wander()
     {
-        // Get future position
-        Vector3 futurePosition = GetFuturePosition();
-
         // Select random point on circle of radius "radius" around the future position
-        Vector3 target = GeneratePointOnCircle(futurePosition);
+        Vector3 target = GeneratePointOnCircle(GetFuturePosition());
 
         // Compute desired velocity as one pointing there
         Vector3 desiredVelocity = GetDesiredVelocity(target);
@@ -208,9 +210,9 @@ public class Boid : MonoBehaviour
         Vector3 steerForce = desiredVelocity - body.velocity;
 
         // Cap the force that can be applied
-        if (Vector3.Magnitude(steerForce) > maxForce)
+        if (steerForce.magnitude > maxForce)
         {
-            steerForce = Vector3.Normalize(steerForce) * maxForce;
+            steerForce = steerForce.normalized * maxForce;
         }
 
         return steerForce;
@@ -246,6 +248,6 @@ public class Boid : MonoBehaviour
      */
     Vector3 GetDesiredVelocity(Vector3 target)
     {
-        return Vector3.Normalize(target - transform.position) * maxSpeed;
+        return (target - transform.position).normalized * maxSpeed;
     }
 }
