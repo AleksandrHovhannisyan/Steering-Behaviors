@@ -8,10 +8,13 @@ public class Boid : MonoBehaviour
     private float alignmentRadius;
     private float cohesionRadius;
 
-    public float maxSpeed = 40;
-    public float maxForce;
-    private int timeLookahead = 4; // for wandering only
-    private float wanderingRadius = 60; // for wandering only
+    // Note: maxSpeed should always be < maxForce
+    public float maxSpeed = 90;
+    public float maxForce = 100;
+
+    // For wandering only
+    private int timeLookahead = 4; 
+    private float wanderingRadius = 60;
 
     private Rigidbody body;
 
